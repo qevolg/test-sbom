@@ -1,0 +1,9 @@
+[package]
+name = "test-sbom"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.101"
+taos = "0.12.3"
+tokio = "1.49.0"
