@@ -6,6 +6,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 env:
   # cdx format
   SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.cdx.json"
