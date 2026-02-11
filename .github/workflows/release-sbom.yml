@@ -1,24 +1,21 @@
 name: Release SBOM
 
 on:
-  pull_request:
-    branches: ["main", "3.0"]
-  workflow_run:
-    workflows: ["Release"] # The corresponding name in release.yml is: Release
-    types: [completed]
+  push:
+    tags:
+      - "v*"
 
 permissions:
   contents: write
 
 env:
   # cdx format
-  SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.cdx.json"
+  SBOM_FILENAME: "${{ github.event.repository.name }}-release-sbom.cdx.json"
   # spdx format
   # SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.spdx.json
 
 jobs:
-  sbom:
-    name: Generate and Scan SBOM
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -36,12 +33,6 @@ jobs:
           # spdx format
           # format: spdx-json
           output-file: "${{ env.SBOM_FILENAME }}"
-          artifact-name: "${{ env.SBOM_FILENAME }}"
-
-      - name: Publish SBOM
-        uses: anchore/sbom-action/publish-sbom@v0
-        with:
-          sbom-artifact-match: ${{ env.SBOM_FILENAME }}
 
       # https://github.com/marketplace/actions/anchore-container-scan
       - name: Scan SBOM
@@ -50,3 +41,14 @@ jobs:
           sbom: "${{ env.SBOM_FILENAME }}"
           cache-db: true
           output-format: "table"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: "${{ env.SBOM_FILENAME }}"
