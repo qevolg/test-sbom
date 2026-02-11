@@ -1,0 +1,47 @@
+name: Release SBOM
+
+on:
+  pull_request:
+    branches: ["main", "3.0"]
+  workflow_run:
+    workflows: ["Release"] # The corresponding name in release.yml is: Release
+    types: [completed]
+
+permissions:
+  contents: write
+
+env:
+  # cdx format
+  SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.cdx.json"
+  # spdx format
+  # SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.spdx.json
+
+jobs:
+  sbom:
+    name: Generate and Scan SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # By default, this action will execute a Syft scan in the workspace directory
+      # and upload a workflow artifact SBOM in SPDX format. It will also detect if
+      # being run during a GitHub release and upload the SBOM as a release asset.
+      #
+      # https://github.com/marketplace/actions/anchore-sbom-action
+      - name: Create SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          # cdx format
+          format: cyclonedx-json
+          # spdx format
+          # format: spdx-json
+          output-file: "${{ env.SBOM_FILENAME }}"
+          artifact-name: "${{ env.SBOM_FILENAME }}"
+
+      # https://github.com/marketplace/actions/anchore-container-scan
+      - name: Scan SBOM
+        uses: anchore/scan-action@v7
+        with:
+          sbom: "${{ env.SBOM_FILENAME }}"
+          cache-db: true
+          output-format: "table"
