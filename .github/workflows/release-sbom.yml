@@ -38,6 +38,11 @@ jobs:
           output-file: "${{ env.SBOM_FILENAME }}"
           artifact-name: "${{ env.SBOM_FILENAME }}"
 
+      - name: Publish SBOM
+        uses: anchore/sbom-action/publish-sbom@v0
+        with:
+          sbom-artifact-match: ${{ env.SBOM_FILENAME }}
+
       # https://github.com/marketplace/actions/anchore-container-scan
       - name: Scan SBOM
         uses: anchore/scan-action@v7
