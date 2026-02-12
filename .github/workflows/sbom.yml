@@ -9,7 +9,7 @@ on:
 jobs:
   sbom:
     name: Generate and Scan SBOM
-    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'test-')
+    # if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'test-')
     runs-on: ubuntu-latest
     permissions:
       actions: read
