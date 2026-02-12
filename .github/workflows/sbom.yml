@@ -6,12 +6,6 @@ on:
   release:
     types: [published]
 
-env:
-  # cdx format
-  SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.cdx.json"
-  # spdx format
-  # SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.spdx.json
-
 jobs:
   sbom:
     name: Generate and Scan SBOM
@@ -19,6 +13,11 @@ jobs:
     permissions:
       actions: read
       contents: write
+    env:
+      # cdx format
+      SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.cdx.json"
+      # spdx format
+      # SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.spdx.json
     steps:
       - uses: actions/checkout@v6
 

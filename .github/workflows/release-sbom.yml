@@ -5,18 +5,17 @@ on:
     tags:
       - "v*"
 
-env:
-  # cdx format
-  SBOM_FILENAME: "${{ github.event.repository.name }}-release-sbom.cdx.json"
-  # spdx format
-  # SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.spdx.json
-
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: write
+    env:
+      # cdx format
+      SBOM_FILENAME: "${{ github.event.repository.name }}-release-sbom.cdx.json"
+      # spdx format
+      # SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.spdx.json
     steps:
       - uses: actions/checkout@v6
 
@@ -33,6 +32,7 @@ jobs:
           # spdx format
           # format: spdx-json
           output-file: "${{ env.SBOM_FILENAME }}"
+          artifact-name: "${{ env.SBOM_FILENAME }}"
 
       # https://github.com/marketplace/actions/anchore-container-scan
       - name: Scan SBOM
