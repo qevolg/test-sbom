@@ -6,9 +6,6 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: write
-
 env:
   # cdx format
   SBOM_FILENAME: "${{ github.event.repository.name }}-sbom.cdx.json"
@@ -19,6 +16,9 @@ jobs:
   sbom:
     name: Generate and Scan SBOM
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
     steps:
       - uses: actions/checkout@v6
 
